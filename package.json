@@ -4,6 +4,7 @@
     "description": "Adds support for Tabletop Simulator integration and lua scripting",
     "version": "0.0.1",
     "publisher": "OliPro007",
+    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/OliPro007/vscode-tabletopsimulator-lua.git"
