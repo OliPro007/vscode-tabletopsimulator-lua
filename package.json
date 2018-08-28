@@ -1,0 +1,151 @@
+{
+    "name": "ttslua",
+    "displayName": "TTSLua",
+    "description": "Adds support for Tabletop Simulator integration and lua scripting",
+    "version": "0.0.1",
+    "publisher": "OliPro007",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OliPro007/vscode-tabletopsimulator-lua.git"
+    },
+    "engines": {
+        "vscode": "^1.26.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "ttslua.start",
+                "title": "Start Tabletop Simulator Interaction",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.stop",
+                "title": "Stop Tabletop Simulator Interaction",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.getObjects",
+                "title": "Get Lua Scripts",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.saveAndPlay",
+                "title": "Save And Play",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.openSaveFile",
+                "title": "Open Save File",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.createXml",
+                "title": "Create XML UI File",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.executeLuaSelection",
+                "title": "Execute Lua Selection",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.generateGUIDFunction",
+                "title": "Generate GUID Code...",
+                "category": "TTSLua"
+            },
+            {
+                "command": "ttslua.help",
+                "title": "Help",
+                "category": "TTSLua"
+            }
+        ],
+        "menus":{
+            "commandPalette": [
+                {
+                    "command": "ttslua.start",
+                    "when": "!ttslua.activated"
+                },
+                {
+                    "command": "ttslua.stop",
+                    "when": "ttslua.activated"
+                },
+                {
+                    "command": "ttslua.getObjects",
+                    "when": "ttslua.activated"
+                },
+                {
+                    "command": "ttslua.saveAndPlay",
+                    "when": "ttslua.activated"
+                },
+                {
+                    "command": "ttslua.openSaveFile",
+                    "when": "ttslua.activated"
+                },
+                {
+                    "command": "ttslua.createXml",
+                    "when": "ttslua.activated"
+                },
+                {
+                    "command": "ttslua.executeLuaSelection",
+                    "when": "ttslua.activated"
+                },
+                {
+                    "command": "ttslua.generateGUIDFunction",
+                    "when": "ttslua.activated"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "TabletopSimulator Lua Configuration",
+            "properties": {
+                "ttslua.communicationMode": {
+                    "title": "Communication with Tabletop Simulator",
+                    "description": "Should Atom automatically open files received from the game?",
+                    "type": "string",
+                    "default": "all",
+                    "enum": [
+                        "all",
+                        "global",
+                        "none",
+                        "disable"
+                    ]
+                },
+                "ttslua.createXml": {
+                    "title": "Create XML UI file when object sent from Tabletop Simulator",
+                    "description": "When an individual object is sent from Tabletop Simulator which has no XML UI, generate a blank XML file for it.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "ttslua.delayLinter": {
+                    "title": "Delay Linter When Loading",
+                    "description": "Delay in ``ms`` before linting a newly loaded file.",
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/mkdirp": "^0.5.2",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.21"
+    }
+}
