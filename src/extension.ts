@@ -1,9 +1,13 @@
 import * as vscode from 'vscode';
 import { TTSLuaDir } from './filehandler';
-import { TTsLua } from './ttslua';
+import { TTSLua } from './ttslua';
+
+let manager: TTSLua.Manager;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('The TTSLua extension is activating...');
+
+    manager = undefined;
 
     // Check if the current workspace is set on the temporary directory
     let uri = vscode.Uri.file(TTSLuaDir);
@@ -11,17 +15,9 @@ export function activate(context: vscode.ExtensionContext) {
         // Register the stop command to disable the interaction with TTS
         context.subscriptions.push(vscode.commands.registerCommand('ttslua.stop', stop));
         
-        // Create the interaction manager
-        let ttslua = new TTsLua();
-        ttslua.startServer();
-
-        // Register the interaction commands
-        context.subscriptions.push(vscode.commands.registerCommand('ttslua.getObjects', ttslua.getScripts));
-        context.subscriptions.push(vscode.commands.registerCommand('ttslua.saveAndPlay', ttslua.saveAndPlay));
-        context.subscriptions.push(vscode.commands.registerCommand('ttslua.openSaveFile', ttslua.openSaveFile));
-        context.subscriptions.push(vscode.commands.registerCommand('ttslua.createXml', ttslua.createXml));
-        context.subscriptions.push(vscode.commands.registerCommand('ttslua.executeLuaSelection', ttslua.executeLuaSelection));
-        context.subscriptions.push(vscode.commands.registerCommand('ttslua.generateGUIDFunction', ttslua.generateGuid));
+        // Create the manager
+        manager = new TTSLua.Manager(context);
+        context.subscriptions.push(manager);
 
         console.log('Tabletop Simulator Interaction is active');
         vscode.window.showInformationMessage('Ready to work with Tabletop Simulator');
@@ -40,6 +36,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+    if(manager) {
+        manager.dispose();
+    }
+
     setCommandVisibility(false);
     console.log('The TTSLua extension is now inactive.');
 }
