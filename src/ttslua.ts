@@ -5,77 +5,11 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { FileHandler, TTSLuaDir } from './filehandler';
 
-const Domain = 'localhost';
-const ClientPort = 39999;
-const ServerPort = 39998;
-
-enum TTSServerMsg {
-    None = -1,
-    NewObjects,
-    NewGame,
-    Print,
-    Error,
-    Custom,
-    Return,
-    GameSaved,
-    ObjectCreated
-}
-
-enum TTSClientMsg {
-    None = -1,
-    GetScripts,
-    SavePlay,
-    Custom,
-    Lua
-}
-
-interface TTSData {
-    messageID: number;
-
-    customMessage?: any;
-    error?: string;
-    errorMessagePrefix?: string;
-    guid?: string;
-    message?: string;
-    returnId?: number;
-    returnValue?: any;
-    savePath?: string;
-    scriptStates?: ScriptState[];
-}
-
-interface ScriptState {
-    guid: string;
-    name: string;
-    script: string;
-    ui?: string;
-}
-
-interface Guid {
-    parent: string;
-    tag: string;
-    Name: string;
-    Nickname: string;
-    Description: string;
-    Transform: object;
-    Tooltip: string;
-}
-
-interface Save {
-    guids: { [id: string]: Guid };
-    savePath: string;
-    timestamp?: Date;
-}
-
-function hashCode(s: string): number {
-    let hash = 0;
-    for (let i = 0; i < s.length; i++) {
-        hash = hash * 31 + s.charCodeAt(i);
-    }
-
-    return hash;
-}
-
 export namespace TTSLua {
+    const Domain = 'localhost';
+    const ClientPort = 39999;
+    const ServerPort = 39998;
+
     export class Manager extends vscode.Disposable {
         // For now it's gonna be public...
         public returnIds: Map<number, string>;
@@ -351,24 +285,88 @@ export namespace TTSLua {
             if(this.connection) {
                 this.connection.end();
             }
+
+            console.log('Client disposed');
         }
 
         public async getScripts(): Promise<void> {
+            if(!isCommuncationEnabled()) {
+                return;
+            }
+
+            const Choice = 'Get Scripts';
+
             // Show a modal confirmation dialog
             let chosen = await vscode.window.showInformationMessage(
                 'Get Lua Scripts from game?\n\nThis will erase any changes that you have made in Visual Studio Code since the last Save & Play.',
                 { modal: true },
-                'Get Scripts'
+                Choice
             );
                 
-            if(chosen === 'Get Scripts') {
+            if(chosen === Choice) {
                 console.log('Get Lua Scripts: Sending request to TTS...');
                 this.send(`{messageID: ${TTSClientMsg.GetScripts}}`);
             }
         }
         
         public async saveAndPlay(): Promise<void> {
-        
+            if(!isCommuncationEnabled()) {
+                return;
+            }
+
+            // if doingSaveAndPlay or savePath === ''
+
+            // check tts
+
+            console.log('Save & Play: Sending request to TTS...');
+
+            // Save all opened files before continuing
+            if(!await vscode.workspace.saveAll(false)) {
+                console.error('Unable to save all opened files');
+                return;
+            }
+
+            console.log('Saved all opened files successfully');
+
+            // Open all the files and retreive the ScriptStates
+            let objects = new Map<string, ScriptState>();
+
+            fs.readdirSync(TTSLuaDir).forEach(file => {
+                let filePath = path.join(TTSLuaDir, file);
+                if(!fs.statSync(filePath).isDirectory()) {
+                    // Extract the relevant info and create a new object placeholder if it doesn't exist
+                    if(!objects.has(file)) {
+                        let tokens = file.split('.');
+                        
+                        objects.set(file, {
+                            name: file,
+                            guid: tokens[tokens.length - 2],
+                            script: ''
+                        });
+                    }
+
+                    if(filePath.endsWith('.ttslua')) {
+                        let obj = objects.get(file);
+                        obj.script = fs.readFileSync(filePath, 'utf8');
+
+                        // included files...
+                    } else if(filePath.endsWith('.xml')) {
+                        let obj = objects.get(file);
+                        obj.ui = fs.readFileSync(filePath, 'utf8');
+                    }
+                }
+            });
+
+            // Generate the message
+            let message: TTSData = {
+                messageID: TTSClientMsg.SavePlay,
+                scriptStates: [...objects.values()]
+            };
+
+            // Send the message
+            await vscode.window.showInformationMessage(`Sending ${message.scriptStates.length} files...`);
+
+            this.send(JSON.stringify(message));
         }
         
         public async openSaveFile(): Promise<void> {
@@ -388,7 +386,7 @@ export namespace TTSLua {
         }
 
         private send(msg: string) {
-            if(vscode.workspace.getConfiguration('ttslua').get('communicationMode') as string === 'disable') {
+            if(!isCommuncationEnabled()) {
                 return;
             }
 
@@ -428,8 +426,6 @@ export namespace TTSLua {
                 returnID?: number;
             }
 
-            //start connection
-
             let msg: Message = { messageID: TTSClientMsg.Lua as number, guid: (guid) ? guid : '-1', script: lua };
 
             if(expectingReturn) {
@@ -438,7 +434,7 @@ export namespace TTSLua {
                 this.manager.returnIds.set(code, lua);
             }
 
-            // connection write
+            this.send(JSON.stringify(msg));
         }
     }
 
@@ -451,7 +447,7 @@ export namespace TTSLua {
 
             this.manager = manager;
     
-            if(vscode.workspace.getConfiguration('ttslua').get('communicationMode') as string === 'disable') {
+            if(!isCommuncationEnabled()) {
                 this.server = undefined;
                 return;
             }
@@ -483,6 +479,78 @@ export namespace TTSLua {
             if(this.server) {
                 this.server.close();
             }
+
+            console.log('Server disposed');
         }
+    }
+
+    function isCommuncationEnabled(): boolean {
+        return vscode.workspace.getConfiguration('ttslua').get('communicationMode') as string !== 'disable';
+    }
+
+    function hashCode(s: string): number {
+        let hash = 0;
+        for (let i = 0; i < s.length; i++) {
+            hash = hash * 31 + s.charCodeAt(i);
+        }
+    
+        return hash;
+    }
+
+    enum TTSServerMsg {
+        None = -1,
+        NewObjects,
+        NewGame,
+        Print,
+        Error,
+        Custom,
+        Return,
+        GameSaved,
+        ObjectCreated
+    }
+    
+    enum TTSClientMsg {
+        None = -1,
+        GetScripts,
+        SavePlay,
+        Custom,
+        Lua
+    }
+    
+    interface TTSData {
+        messageID: number;
+    
+        customMessage?: any;
+        error?: string;
+        errorMessagePrefix?: string;
+        guid?: string;
+        message?: string;
+        returnId?: number;
+        returnValue?: any;
+        savePath?: string;
+        scriptStates?: ScriptState[];
+    }
+    
+    interface ScriptState {
+        guid: string;
+        name: string;
+        script: string;
+        ui?: string;
+    }
+    
+    interface Guid {
+        parent: string;
+        tag: string;
+        Name: string;
+        Nickname: string;
+        Description: string;
+        Transform: object;
+        Tooltip: string;
+    }
+    
+    interface Save {
+        guids: { [id: string]: Guid };
+        savePath: string;
+        timestamp?: Date;
     }
 }
