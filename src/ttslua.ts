@@ -409,7 +409,11 @@ export namespace TTSLua {
         }
         
         public async openSaveFile(): Promise<void> {
-        
+            let save = this.manager.getSave();
+            if(save.savePath !== '') {
+                let doc = await vscode.workspace.openTextDocument(vscode.Uri.file(save.savePath));
+                await vscode.window.showTextDocument(doc, { preview: false, preserveFocus: true });
+            }
         }
         
         public async createXml(): Promise<void> {
