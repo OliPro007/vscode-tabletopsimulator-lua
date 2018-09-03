@@ -16,7 +16,9 @@ export namespace TTSLua {
 
         private errors: any;
         private results: any;
+
         private save: Save;
+        private lastObjectAddedTime?: Date;
 
         private context: vscode.ExtensionContext;
         private client: Client;
@@ -55,6 +57,14 @@ export namespace TTSLua {
             this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.executeLuaSelection', this.client.executeLuaSelection));
             this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.generateGUIDFunction', this.client.generateGuid));
         }
+
+        public getSave(): Save {
+            return this.save;
+        }
+
+        public getLastObjectAddedTime(): Date {
+            return this.lastObjectAddedTime;
+        }
     
         public handleMessage(data: TTSData, fromTTS: boolean) {
             let id: TTSServerMsg = data.messageID;
@@ -71,7 +81,7 @@ export namespace TTSLua {
                     break;
                 case TTSServerMsg.NewGame:
                     this.readFilesFromTTS(data.scriptStates, false);
-                    //mutex.doingSaveAndPlay = false
+                    this.client.saveAndPlayCompleted();
                     break;
                 case TTSServerMsg.Print:
                     console.log(data.message);
@@ -128,6 +138,7 @@ export namespace TTSLua {
                     break;
                 case TTSServerMsg.ObjectCreated:
                     console.log(`Component created: ${data.guid}`);
+                    this.lastObjectAddedTime = new Date(Date.now());
                     break;
             }
         }
@@ -274,6 +285,8 @@ export namespace TTSLua {
         private manager: Manager;
         private connection: net.Socket;
 
+        private saveAndPlayTimeout?: NodeJS.Timer;
+
         public constructor(manager: Manager) {
             super(() => this.dispose());
 
@@ -314,11 +327,36 @@ export namespace TTSLua {
                 return;
             }
 
-            // if doingSaveAndPlay or savePath === ''
+            if(this.saveAndPlayTimeout) {
+                return;
+            }
 
-            // check tts
+            let save = this.manager.getSave();
+
+            // There is no save loaded, not doing Save & Play
+            if(save.savePath === '' || !fs.existsSync(save.savePath)) {
+                return;
+            }
+
+            // Check if objects were added in TTS since last get
+            let lastObjectAddedTime = this.manager.getLastObjectAddedTime();
+            if(lastObjectAddedTime && save.timestamp < lastObjectAddedTime) {
+                // Ask the user to accept overwrite or cancel Save & Play
+                let chosen = await vscode.window.showInformationMessage(
+                    'Overwrite Tabletop Simulator save?\nComponents have been added in Tabletop Simulator but have not been saved.  If you continue any such components may be lost.',
+                    { modal: true },
+                    'Overwrite'
+                );
+
+                if(!chosen) {
+                    return;
+                }
+            }       
 
             console.log('Save & Play: Sending request to TTS...');
+
+            // Schedule a timeout in case a problem occurs and no response is received
+            this.saveAndPlayTimeout = setTimeout(this.saveAndPlayCompleted, 3000);
 
             // Save all opened files before continuing
             if(!await vscode.workspace.saveAll(false)) {
@@ -345,6 +383,7 @@ export namespace TTSLua {
                         });
                     }
 
+                    // Complete the object placeholder with the content of the file
                     if(filePath.endsWith('.ttslua')) {
                         let obj = objects.get(file);
                         obj.script = fs.readFileSync(filePath, 'utf8');
@@ -383,6 +422,13 @@ export namespace TTSLua {
         
         public async generateGuid(): Promise<void> {
         
+        }
+
+        public saveAndPlayCompleted() {
+            if(this.saveAndPlayTimeout) {
+                clearTimeout(this.saveAndPlayTimeout);
+                this.saveAndPlayTimeout = undefined;
+            }
         }
 
         private send(msg: string) {
