@@ -466,6 +466,8 @@ export namespace TTSLua {
             this.connection.on('close', hadError => {
                 this.connection = undefined;
             });
+
+            this.connection.write(msg);
         }
 
         private executeLua(lua: string, expectingReturn: boolean, guid?: string) {
