@@ -417,7 +417,23 @@ export namespace TTSLua {
         }
         
         public async createXml(): Promise<void> {
-        
+            if(!vscode.window.activeTextEditor) {
+                return;
+            }
+
+            let fileName = vscode.window.activeTextEditor.document.fileName;
+            if(!fileName.endsWith(".ttslua") || path.dirname(fileName) !== TTSLuaDir) {
+                return;
+            }
+
+            fileName = fileName.replace(".ttslua", ".xml");
+
+            let handler = new FileHandler(path.basename(fileName));
+            if(!fs.existsSync(fileName)) {
+                handler.create("");
+            }
+
+            await handler.open();
         }
         
         public async executeLuaSelection(): Promise<void> {
