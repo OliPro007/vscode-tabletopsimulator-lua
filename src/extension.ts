@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { TTSLuaDir } from './filehandler';
+import { TTSLuaDir, tryCreateWorkspaceFolder } from './filehandler';
 import { TTSLua } from './ttslua';
 
 let manager: TTSLua.Manager;
@@ -48,6 +48,8 @@ async function start() {
     let uri = vscode.Uri.file(TTSLuaDir);
     if(!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.findIndex(val => val.uri.fsPath === uri.fsPath) === -1) {
         await setCommandVisibility(true);
+
+        tryCreateWorkspaceFolder();
 
         vscode.workspace.updateWorkspaceFolders(
             0,

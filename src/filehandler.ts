@@ -5,6 +5,15 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 
 export const TTSLuaDir = path.join(os.tmpdir(), 'TabletopSimulator', 'Tabletop Simulator Lua');
+export function tryCreateWorkspaceFolder() {
+    try {
+        if(!fs.existsSync(TTSLuaDir)) {
+            mkdirp.sync(TTSLuaDir);
+        }
+    } catch(e) {
+        console.error(`Failed to create workspace folder: ${e}`);
+    }
+}
 
 export class FileHandler {
     private basename: string;
