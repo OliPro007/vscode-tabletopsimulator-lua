@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { TTSLuaDir, tryCreateWorkspaceFolder } from './filehandler';
-import { TTSLua } from './ttslua';
+import { Manager } from './ttslua/manager';
 
-let manager: TTSLua.Manager;
+let manager: Manager;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('The TTSLua extension is activating...');
@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(vscode.commands.registerCommand('ttslua.stop', stop));
         
         // Create the manager
-        manager = new TTSLua.Manager(context);
+        manager = new Manager(context);
         context.subscriptions.push(manager);
 
         console.log('Tabletop Simulator Interaction is active');
