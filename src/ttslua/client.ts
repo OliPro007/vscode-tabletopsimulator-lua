@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { FileHandler, TTSLuaDir } from '../filehandler';
 import { ScriptState, TTSData } from './interfaces';
 import { Manager } from './manager';
-import { Domain, hashCode, isCommuncationEnabled, TTSClientMsg } from './misc';
+import { Domain, getPathGUID, hashCode, isCommuncationEnabled, TTSClientMsg } from './misc';
 
 const ClientPort = 39999;
 
@@ -166,7 +166,24 @@ export class Client extends vscode.Disposable {
     }
     
     public async executeLuaSelection(): Promise<void> {
-        
+        let editor = vscode.window.activeTextEditor;
+        let code = editor.document.getText(editor.selection);
+
+        if(code === '') {
+            code = editor.document.getText();
+        }
+
+        // Parse/Check if lua code is valid
+        let valid = true;
+
+        if(valid) {
+            let guid = '-1';
+            if(path.dirname(editor.document.fileName) === TTSLuaDir) {
+                guid = getPathGUID(path.basename(editor.document.fileName));
+            }
+
+            this.executeLua(code, true, guid);
+        }
     }
     
     public async generateGuid(): Promise<void> {

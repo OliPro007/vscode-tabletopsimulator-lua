@@ -34,3 +34,8 @@ export function hashCode(s: string): number {
 
     return hash;
 }
+
+export function getPathGUID(p: string): string {
+    const [name, guid, ext] = Array.from(p.split('.'));
+    return guid;
+}
