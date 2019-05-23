@@ -49,12 +49,12 @@ export class Manager extends vscode.Disposable {
     }
 
     private registerCommands() {
-        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.getObjects', this.client.getScripts));
-        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.saveAndPlay', this.client.saveAndPlay));
-        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.openSaveFile', this.client.openSaveFile));
-        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.createXml', this.client.createXml));
-        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.executeLuaSelection', this.client.executeLuaSelection));
-        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.generateGUIDFunction', this.client.generateGuid));
+        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.getObjects', this.client.getScripts, this.client));
+        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.saveAndPlay', this.client.saveAndPlay, this.client));
+        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.openSaveFile', this.client.openSaveFile, this.client));
+        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.createXml', this.client.createXml, this.client));
+        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.executeLuaSelection', this.client.executeLuaSelection, this.client));
+        this.context.subscriptions.push(vscode.commands.registerCommand('ttslua.generateGUIDFunction', this.client.generateGuid, this.client));
     }
 
     public getSave(): Save {
