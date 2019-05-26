@@ -20,6 +20,20 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "languages": [
+            {
+                "id": "ttslua",
+                "aliases": ["ttslua", "TTSLua"],
+                "extensions": [".ttslua"]
+            }
+        ],
+        "grammars": [
+            {
+                "language": "ttslua",
+                "scopeName": "source.tts.lua",
+                "path": "./syntaxes/ttslua.tmLanguage.json"
+            }
+        ],
         "commands": [
             {
                 "command": "ttslua.start",
