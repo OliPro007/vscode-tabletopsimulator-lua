@@ -20,6 +20,7 @@ export class Manager extends vscode.Disposable {
     private lastObjectAddedTime?: Date;
 
     private context: vscode.ExtensionContext;
+    private outputChannel: vscode.OutputChannel;
     private client: Client;
     private server: Server;
 
@@ -41,6 +42,8 @@ export class Manager extends vscode.Disposable {
 
         this.context = context;
         this.registerCommands();
+
+        this.outputChannel = vscode.window.createOutputChannel('TTSLua');
     }
 
     public dispose() {
@@ -65,10 +68,15 @@ export class Manager extends vscode.Disposable {
         return this.lastObjectAddedTime;
     }
 
+    public getOutputChannel(): vscode.OutputChannel {
+        return this.outputChannel;
+    }
+
     public handleMessage(data: TTSData, fromTTS: boolean) {
         let id: TTSServerMsg = data.messageID;
 
         console.log(`Received message from TTS: [${TTSServerMsg[id]}]`);
+        this.outputChannel.appendLine(`Received message from TTS: [${TTSServerMsg[id]}]`);
 
         if(data.savePath && data.savePath !== undefined) {
             this.parseSavePath(data.savePath);
@@ -83,10 +91,14 @@ export class Manager extends vscode.Disposable {
                 this.client.saveAndPlayCompleted();
                 break;
             case TTSServerMsg.Print:
-                console.log(data.message);
+                //console.log(data.message);
+                this.outputChannel.appendLine(data.message);
+                this.outputChannel.show();
                 break;
             case TTSServerMsg.Error:
-                console.error(`${data.errorMessagePrefix} ${data.error}`);
+                //console.error(`${data.errorMessagePrefix} ${data.error}`);
+                this.outputChannel.appendLine(`${data.errorMessagePrefix} ${data.error}`);
+                this.outputChannel.show();
                 break;
             case TTSServerMsg.Custom:
                 if('messageID' in data.customMessage) {
