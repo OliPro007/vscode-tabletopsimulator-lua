@@ -14,6 +14,11 @@ export function activate(context: vscode.ExtensionContext) {
     if(vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.findIndex(val => val.uri.fsPath === uri.fsPath) !== -1) {
         // Register the stop command to disable the interaction with TTS
         context.subscriptions.push(vscode.commands.registerCommand('ttslua.stop', stop));
+
+        // Display a status bar item when the interaction is enabled
+        let item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+        item.text = "$(light-bulb) TTS interaction is activated";
+        item.show();
         
         // Create the manager
         manager = new Manager(context);
