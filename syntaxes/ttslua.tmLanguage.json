@@ -1,5 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "fileTypes": [
+        "ttslua"
+    ],
     "firstLineMatch": "\\A#!.*?\\blua\\b",
     "name": "ttslua",
     "patterns": [
