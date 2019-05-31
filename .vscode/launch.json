@@ -31,6 +31,21 @@
                 "${workspaceFolder}/out/test/**/*.js"
             ],
             "preLaunchTask": "npm: watch"
+        },
+        {
+            "name": "Generate Snippets",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "generateSnippets"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/language/generateSnippets.js"
+            ],
+            "preLaunchTask": "npm: watch",
+            "port": 9229
         }
     ]
 }

@@ -2,6 +2,7 @@
 .vscode-test/**
 out/test/**
 out/**/*.map
+out/language/generateSnippets.js
 src/**
 .gitignore
 tsconfig.json
