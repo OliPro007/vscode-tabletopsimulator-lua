@@ -35,18 +35,7 @@ const sectionFiles = {
     'Globally accessible constants & functions': 'globalConstFunc.ts'
 };
 
-request.get(url, (error: any, response: request.Response, atomFileContent: string) => {
-    console.log(`Status code: ${response.statusCode}`);
-
-    if(response.statusCode !== 200 && error) {
-        console.error(error);
-        return;
-    }
-
-    console.log('Decaffeinating code, it may take a while...');
-    let code = decaffeinate.convert(atomFileContent, { useJSModules: true, loose: true }).code;
-    console.log('Done decaffeinating');
-
+function writeSnippets(code: string) {
     let start = code.indexOf(searchPrefix);
     let end = code.indexOf(searchEnd);
     let lines = code.substring(start, end).split('\n');
@@ -104,5 +93,43 @@ request.get(url, (error: any, response: request.Response, atomFileContent: strin
         current = next;
     }
 
+    console.log('Done writing snippets');
+}
+
+function writeIndex() {
+    console.log('Writing index.ts');
+
+    let fd = fs.openSync(path.join(__dirname, '..', '..', 'src', 'language', 'suggestions', 'index.ts'), 'w');
+
+    Object.values(sectionFiles).forEach(fileName => {
+        let basename = path.basename(fileName, '.ts');
+
+        let capitalized = function(s: string): string {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }(basename);
+
+        fs.writeSync(fd, `export { getSuggestions as get${capitalized}Suggestions } from './${basename}';\n`);
+    });
+
+    fs.closeSync(fd);
+
+    console.log('Done writing index.ts');
+}
+
+request.get(url, (error: any, response: request.Response, atomFileContent: string) => {
+    console.log(`Status code: ${response.statusCode}`);
+
+    if(response.statusCode !== 200 && error) {
+        console.error(error);
+        return;
+    }
+
+    console.log('Decaffeinating code, it may take a while...');
+    let code = decaffeinate.convert(atomFileContent, { useJSModules: true, loose: true }).code;
+    console.log('Done decaffeinating');
+
+    writeSnippets(code);
+    writeIndex();
+    
     console.log('Done!');
 });
