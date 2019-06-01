@@ -78,7 +78,7 @@ function writeSnippets(code: string) {
         fs.writeSync(fd, "import { Suggestion } from './suggestion';\n\n");
 
         if('Default Events' === sectionName) {
-            fs.writeSync(fd, 'export function getSuggestions(global_script: Boolean): Suggestion[] {\n');
+            fs.writeSync(fd, 'export function getSuggestions(globalScript: boolean): Suggestion[] {\n');
         } else {
             fs.writeSync(fd, 'export function getSuggestions(): Suggestion[] {\n');
         }

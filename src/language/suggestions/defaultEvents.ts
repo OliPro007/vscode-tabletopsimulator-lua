@@ -1,9 +1,9 @@
 import { Suggestion } from './suggestion';
 
-export function getSuggestions(global_script: Boolean): Suggestion[] {
+export function getSuggestions(globalScript: boolean): Suggestion[] {
     let suggestions: Suggestion[] = [];
     suggestions = [];
-    if (!global_script) {
+    if (!globalScript) {
         suggestions = suggestions.concat([
             {
                 snippet:

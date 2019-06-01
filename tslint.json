@@ -9,7 +9,12 @@
 			true,
 			"always"
 		],
-		"triple-equals": true
+		"triple-equals": true,
+		"variable-name": [
+			true,
+			"check-format",
+			"allow-leading-underscore"
+		]
 	},
 	"defaultSeverity": "warning"
 }

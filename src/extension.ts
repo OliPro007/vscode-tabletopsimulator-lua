@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as completion from './language/completion';
 import { TTSLuaDir, tryCreateWorkspaceFolder } from './filehandler';
 import { Manager } from './ttslua/manager';
 
@@ -35,6 +36,8 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register the help command (can be called in any state)
     context.subscriptions.push(vscode.commands.registerCommand('ttslua.help', help));
+
+    completion.activate(context);
 
     console.log('The TTSLua extension is now active.');
 }
