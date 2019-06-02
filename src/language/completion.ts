@@ -260,7 +260,7 @@ class CompletionProvider implements vscode.CompletionItemProvider {
         if (thisToken.includes('=')) {
             for (let index = 0; index < completionItems.length; index++) {
                 let item = completionItems[index];
-                if (item.insertText.toString().startsWith('getObjectFromGUID')) {
+                if ((item.insertText as vscode.SnippetString).value.startsWith('getObjectFromGUID')) {
                     let identifier = line.match(/([^\s]+)\s*=[^=]*$/)[1];
                     //const guid_string = atom.config.get('tabletopsimulator-lua.style.guidPostfix');
                     const guidString = '_GUID';
@@ -338,13 +338,8 @@ class CompletionProvider implements vscode.CompletionItemProvider {
         }
 
         for (let item of completionItems) {
-            let newSnippet = item.insertText.toString().replace(matchPattern, replacePattern);
-
-            if(typeof item.insertText === typeof vscode.SnippetString) {
-                item.insertText = new vscode.SnippetString(newSnippet);
-            } else {
-                item.insertText = newSnippet;
-            }
+            let newSnippet = (item.insertText as vscode.SnippetString).value.replace(matchPattern, replacePattern);
+            item.insertText = new vscode.SnippetString(newSnippet);
         }
 
         return completionItems;
@@ -427,9 +422,10 @@ class CompletionProvider implements vscode.CompletionItemProvider {
         let item = new vscode.CompletionItem(s.displayText);
 
         if (this.typeToKind.has(s.type)) {
-            item.kind = this.typeToKind[s.type];
+            item.kind = this.typeToKind.get(s.type);
         } else {
             console.warn(`Unable to map ${s.type} to a kind. Did the atom types change?`);
+            item.kind = vscode.CompletionItemKind.Text;
         }
 
         item.insertText = new vscode.SnippetString(s.snippet);
