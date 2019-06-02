@@ -1,6 +1,6 @@
-# ttslua README
+# Tabletop Simulator Lua Integration for VSCode
 
-This is the README for your extension "ttslua". After writing up a brief description, we recommend including the following sections.
+Visual Studio Code extension for Tabletop Simulator Lua development, based on the [official Atom extension](https://github.com/Berserk-Games/atom-tabletopsimulator-lua).
 
 ## Features
 
@@ -18,14 +18,14 @@ If you have any requirements or dependencies, add a section describing those and
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+* `ttslua.communicationMode`: Configures whether the extension should communicate with the game, and if so which files should be automatically opened in the editor when received from the game.
+    * `all`: All files are automatically opened.
+    * `global`: Only the global files are automatically opened.
+    * `none`: No file is automatically opened.
+    * `disabled`: Disable communication with the game.
+* `ttslua.createXml`: When enabled, the extension will automatically create an XML UI file when an object is sent from the game
 
 ## Known Issues
 
@@ -33,21 +33,11 @@ Calling out known issues can help limit users opening duplicate issues against y
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
+WIP
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
+<!-- -----------------------------------------------------------------------------------------------------------
 
 ## Working with Markdown
 
@@ -62,4 +52,4 @@ Added features X, Y, and Z.
 * [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
 * [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
-**Enjoy!**
+**Enjoy!** -->

@@ -27,8 +27,8 @@
             {
                 "id": "ttslua",
                 "aliases": [
-                    "ttslua",
-                    "TTSLua"
+                    "TTSLua",
+                    "ttslua"
                 ],
                 "extensions": [
                     ".ttslua"
