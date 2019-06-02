@@ -77,14 +77,13 @@ class CompletionProvider implements vscode.CompletionItemProvider {
         // TODO: Check if all this can be achieved more easily with builtin textmate
         let { tokens, thisToken, thisTokenIntact, previousToken, previousToken2 } = this.getTokens(line);
 
-        // TODO: Not sure if this is necessary
-        /*if ((context.triggerCharacter === ".") && previous_token.match(/^[0-9]$/)) {
+        if ((context.triggerCharacter === ".") && previousToken.match(/^[0-9]$/)) {
             // If we're in the middle of typing a number then suggest nothing on .
             return;
         } else if (line.match(/(^|\s)else$/) || line.match(/(^|\s)elseif$/) || line.match(/(^|\s)end$/) || (line === "end")) {
             // Short circuit some common lua keywords
             return undefined;
-        }*/
+        }
 
         let isSection = (sectionName: string): boolean => {
             let isVariableTriggered =
@@ -419,7 +418,7 @@ class CompletionProvider implements vscode.CompletionItemProvider {
     }
 
     private convertSuggestionToItem(s: Suggestion): vscode.CompletionItem {
-        let item = new vscode.CompletionItem(s.displayText);
+        let item = new vscode.CompletionItem(s.displayText.match(/\b.*(?=\()|\b.*$/g)[0]);
 
         if (this.typeToKind.has(s.type)) {
             item.kind = this.typeToKind.get(s.type);
@@ -429,10 +428,12 @@ class CompletionProvider implements vscode.CompletionItemProvider {
         }
 
         item.insertText = new vscode.SnippetString(s.snippet);
-        item.documentation = s.description;
+        item.documentation = new vscode.MarkdownString(`${s.description}\n\n[More](${s.descriptionMoreURL})`);
 
         if (s.leftLabel) {
-            item.detail = s.leftLabel;
+            item.detail = `(${s.type}) ${s.leftLabel} ${s.displayText}`;
+        } else {
+            item.detail = `(${s.type}) ${s.displayText}`;
         }
 
         return item;
