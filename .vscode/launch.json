@@ -36,15 +36,15 @@
             "name": "Generate Snippets",
             "type": "node",
             "request": "launch",
+            "cwd": "${workspaceFolder}/generateSnippets",
             "runtimeExecutable": "npm",
             "runtimeArgs": [
-                "run-script",
-                "generateSnippets"
+                "start"
             ],
             "outFiles": [
-                "${workspaceFolder}/out/language/generateSnippets.js"
+                "${workspaceFolder}/generateSnippets/out/generateSnippets.js"
             ],
-            "preLaunchTask": "npm: watch",
+            "preLaunchTask": "npm: watch - generateSnippets",
             "port": 9229
         }
     ]

@@ -1,0 +1,25 @@
+{
+    "name": "generatesnippets",
+    "version": "1.0.0",
+    "description": "Autogenerate snippets from upstream's provider file (why coffeescript code instead of json...)",
+    "author": "OliPro007",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/OliPro007/vscode-tabletopsimulator-lua"
+    },
+    "main": "./out/generateSnippets",
+    "scripts": {
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "start": "node --inspect-brk ./out/generateSnippets.js"
+    },
+    "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.48",
+        "@types/request": "^2.48.1",
+        "decaffeinate": "^5.1.12",
+        "tslint": "^5.16.0",
+        "typescript": "^2.6.1"
+    }
+}

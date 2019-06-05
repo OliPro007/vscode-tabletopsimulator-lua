@@ -3,3 +3,5 @@ node_modules
 .vscode-test/
 *.vsix
 .npmrc
+generateSnippets/out
+generateSnippets/node_modules
