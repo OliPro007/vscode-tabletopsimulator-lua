@@ -132,8 +132,7 @@ class CompletionProvider implements vscode.CompletionItemProvider {
             item.insertText = new vscode.SnippetString('repeat\n\t${1}\nuntil ${2}');
             completionItems.push(item);
         } else if (line.includes('function') && line.endsWith(')')) {
-            //const coroutinePostfix = atom.config.get('tabletopsimulator-lua.style.coroutinePostfix');
-            const coroutinePostfix = '_routine';
+            const coroutinePostfix = vscode.workspace.getConfiguration('ttslua').get('coroutinePostfix') as string;
 
             let funcName = thisToken.substring(0, thisToken.lastIndexOf('('));
             funcName = funcName.substring(funcName.lastIndexOf(' ') + 1);
@@ -261,8 +260,7 @@ class CompletionProvider implements vscode.CompletionItemProvider {
                 let item = completionItems[index];
                 if ((item.insertText as vscode.SnippetString).value.startsWith('getObjectFromGUID')) {
                     let identifier = line.match(/([^\s]+)\s*=[^=]*$/)[1];
-                    //const guid_string = atom.config.get('tabletopsimulator-lua.style.guidPostfix');
-                    const guidString = '_GUID';
+                    const guidString = vscode.workspace.getConfiguration('ttslua').get('guidPostfix') as string;
 
                     let insertionPoint = index;
                     if (identifier.match(/.*\w$/)) {
@@ -308,16 +306,14 @@ class CompletionProvider implements vscode.CompletionItemProvider {
 
         // Convert function parameters to user desired output
         const matchPattern = /\${([0-9]+):([0-9a-zA-Z_]+)\|([0-9a-zA-Z_]+)}/g;
-        //const replace_type = atom.config.get('tabletopsimulator-lua.autocomplete.parameterToDisplay');
-        let replaceType = 'type';
+        const replaceType = vscode.workspace.getConfiguration('ttslua').get('parameterToDisplay') as string;
 
         let replacePattern: any;
         if (replaceType === 'both') {
-            replacePattern = function (match, index, parameterType, parameterName) {
+            replacePattern = function (_match: string, index: number, parameterType: string, parameterName: string) {
                 let capitalize = (s: string) => s.substring(0, 1).toUpperCase() + s.substring(1);
 
-                //let format = atom.config.get('tabletopsimulator-lua.style.parameterFormat');
-                let format = 'type_name';
+                let format = vscode.workspace.getConfiguration('ttslua').get('parameterFormat') as string;
                 format = format.replace("TYPE", parameterType.toUpperCase());
                 format = format.replace("Type", capitalize(parameterType));
                 format = format.replace("type", parameterType);

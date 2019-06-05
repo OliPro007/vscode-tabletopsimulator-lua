@@ -130,7 +130,7 @@
             "properties": {
                 "ttslua.communicationMode": {
                     "title": "Communication with Tabletop Simulator",
-                    "description": "Should Atom automatically open files received from the game?",
+                    "description": "Should vscode automatically open files received from the game?",
                     "type": "string",
                     "default": "all",
                     "enum": [
@@ -145,6 +145,42 @@
                     "description": "When an individual object is sent from Tabletop Simulator which has no XML UI, generate a blank XML file for it.",
                     "type": "boolean",
                     "default": true
+                },
+                "ttslua.guidPostfix": {
+                    "title": "GUID Postfix",
+                    "description": "When guessing the getObjectFromGUID parameter this is appended to the name of the variable being assigned to",
+                    "type": "string",
+                    "default": "_GUID"
+                },
+                "ttslua.coroutinePostfix": {
+                    "title": "Coroutine Postfix",
+                    "description": "When automatically creating an internal coroutine function this is appended to the parent function's name",
+                    "type": "string",
+                    "default": "_routine"
+                },
+                "ttslua.parameterToDisplay": {
+                    "title": "Function Parameters",
+                    "description": "This will determine how autocomplete inserts parameters into your script",
+                    "type": "string",
+                    "default": "type",
+                    "enum": [
+                        "none",
+                        "type",
+                        "name",
+                        "both"
+                    ],
+                    "enumDescriptions": [
+                        "Do not insert most parameters",
+                        "Insert parameters as TYPE",
+                        "Insert parameters as NAME",
+                        "Insert parameters as TYPE & NAME"
+                    ]
+                },
+                "ttslua.parameterFormat": {
+                    "title": "Parameter TYPE & NAME Format",
+                    "markdownDescription": "If you select `TYPE & NAME` above it will format like this. You may vary the case, e.g. `typeName` or `name <TYPE>`",
+                    "type": "string",
+                    "default": "type_name"
                 },
                 "ttslua.delayLinter": {
                     "title": "Delay Linter When Loading",
