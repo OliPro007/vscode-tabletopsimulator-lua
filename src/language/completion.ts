@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as tm from './textmate';
 import * as suggestions from './suggestions';
-import { Suggestion } from './suggestions/suggestion';
 
 /*class Provider1 implements vscode.CompletionItemProvider {
     provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
@@ -413,7 +412,7 @@ class CompletionProvider implements vscode.CompletionItemProvider {
         return { tokens, thisToken, thisTokenIntact, previousToken, previousToken2 };
     }
 
-    private convertSuggestionToItem(s: Suggestion): vscode.CompletionItem {
+    private convertSuggestionToItem(s: suggestions.Suggestion): vscode.CompletionItem {
         let item = new vscode.CompletionItem(s.displayText.match(/\b.*(?=\()|\b.*$/g)[0]);
 
         if (this.typeToKind.has(s.type)) {
