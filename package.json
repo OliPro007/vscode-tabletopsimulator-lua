@@ -27,12 +27,12 @@
             {
                 "id": "ttslua",
                 "aliases": [
-                    "TTSLua",
-                    "ttslua"
+                    "TTSLua"
                 ],
                 "extensions": [
                     ".ttslua"
-                ]
+                ],
+                "configuration": "./language-configuration.json"
             }
         ],
         "grammars": [

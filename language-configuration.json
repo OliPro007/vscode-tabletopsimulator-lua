@@ -15,7 +15,10 @@
 		},
 		{
 			"open": "[",
-			"close": "]"
+			"close": "]",
+			"notIn": [
+				"comment"
+			]
 		},
 		{
 			"open": "(",
@@ -37,8 +40,8 @@
 			]
 		},
 		{
-			"open": "--[[",
-			"close": "--]]",
+			"open": "--[[ ",
+			"close": " --]]",
 			"notIn": [
 				"string"
 			]
@@ -50,11 +53,10 @@
         ["[", "]"],
         ["(", ")"],
         ["\"", "\""],
-        ["'", "'"],
-        ["--[[", "--]]"]
+        ["'", "'"]
     ],
     "indentationRules": {
-        "increaseIndentPattern": "\\b(else|elseif|(local\\s+)?function|then|do|repeat)\\b((?!end).)*$|\\{\\s*$",
-        "decreaseIndentPattern": "^\\s*(elseif|else|end|until,?|\\}\\)?).*$"
+        "increaseIndentPattern": "\\b(else|elseif|(local\\s+)?function|then|do|repeat)\\b((?!end).)*$|\\{\\s*$|\\s*(--\\[\\[)\\s*$",
+        "decreaseIndentPattern": "^\\s*(elseif|else|end|until,?|\\}\\)?).*$|^\\s*(--\\]\\]).*$"
     }
 }
